@@ -43,7 +43,6 @@ Rayfield:Notify({
    },
 })
 
--- Infinite Jump Toggle On/Off
 local Button = MainTab:CreateButton({
    Name = "Infinite Jump Toggle",
    Callback = function()
