@@ -1,167 +1,155 @@
-local ScreenGui = Instance.new("ScreenGui")
-local TextLabel = Instance.new("TextLabel")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-ScreenGui.Parent = game.CoreGui
-TextLabel.Parent = ScreenGui
+local Window = Rayfield:CreateWindow({
+   Name = "🔥 Example Script Hub | Game 🔫",
+   LoadingTitle = "🧟‍♂️ Dead Rails 💥",
+   LoadingSubtitle = "by overlord4me",
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Example Hub"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+   KeySystem = true, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Key | Youtube Hub",
+      Subtitle = "Key System",
+      Note = "Key In Discord Server",
+      FileName = "YoutubeHubKey1", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = ("hello","secret2") -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
 
-TextLabel.Size = UDim2.new(0, 250, 0, 50)
-TextLabel.Position = UDim2.new(0, 10, 0, 10)
-TextLabel.Text = "Powered by overlord4me"
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1
-TextLabel.TextScaled = true
--- Coded By overlord4me 
-local fov = 136
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local Cam = workspace.CurrentCamera
-local Player = game:GetService("Players").LocalPlayer
+local MainTab = Window:CreateTab("🏠 Home", nil) -- Title, Image
+local MainSection = MainTab:CreateSection("Main")
 
-local FOVring = Drawing.new("Circle")
-FOVring.Visible = false
-FOVring.Thickness = 2
-FOVring.Color = Color3.fromRGB(128, 0, 128)
-FOVring.Filled = false
-FOVring.Radius = fov
-FOVring.Position = Cam.ViewportSize / 2
+Rayfield:Notify({
+   Title = "You executed the script",
+   Content = "Very cool gui",
+   Duration = 5,
+   Image = 13047715178,
+   Actions = { -- Notification Buttons
+      Ignore = {
+         Name = "Okay!",
+         Callback = function()
+         print("The user tapped Okay!")
+      end
+   },
+},
+})
 
-local isAiming = false
-local validNPCs = {}
-local raycastParams = RaycastParams.new()
-raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+local Button = MainTab:CreateButton({
+   Name = "Infinite Jump Toggle",
+   Callback = function()
+       --Toggles the infinite jump between on or off on every script run
+_G.infinjump = not _G.infinjump
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
+if _G.infinJumpStarted == nil then
+	--Ensures this only runs once to save resources
+	_G.infinJumpStarted = true
+	
+	--Notifies readiness
+	game.StarterGui:SetCore("SendNotification", {Title="Youtube Hub"; Text="Infinite Jump Activated!"; Duration=5;})
 
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.new(0, 120, 0, 40)
-ToggleButton.Position = UDim2.new(0, 10, 0, 10)
-ToggleButton.Text = "AIMBOT: OFF"
-ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 50, 50)
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.TextSize = 14
-ToggleButton.Parent = ScreenGui
-
-local function isNPC(obj)
-    return obj:IsA("Model") 
-        and obj:FindFirstChild("Humanoid")
-        and obj.Humanoid.Health > 0
-        and obj:FindFirstChild("Head")
-        and obj:FindFirstChild("HumanoidRootPart")
-        and not game:GetService("Players"):GetPlayerFromCharacter(obj)
+	--The actual infinite jump
+	local plr = game:GetService('Players').LocalPlayer
+	local m = plr:GetMouse()
+	m.KeyDown:connect(function(k)
+		if _G.infinjump then
+			if k:byte() == 32 then
+			humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
+			humanoid:ChangeState('Jumping')
+			wait()
+			humanoid:ChangeState('Seated')
+			end
+		end
+	end)
 end
+   end,
+})
 
-local function updateNPCs()
-    local tempTable = {}
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if isNPC(obj) then
-            tempTable[obj] = true
-        end
-    end
-    for i = #validNPCs, 1, -1 do
-        if not tempTable[validNPCs[i]] then
-            table.remove(validNPCs, i)
-        end
-    end
-    for obj in pairs(tempTable) do
-        if not table.find(validNPCs, obj) then
-            table.insert(validNPCs, obj)
-        end
-    end
-end
+local Slider = MainTab:CreateSlider({
+   Name = "WalkSpeed Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+   end,
+})
 
-local function handleDescendant(descendant)
-    if isNPC(descendant) then
-        table.insert(validNPCs, descendant)
-        local humanoid = descendant:WaitForChild("Humanoid")
-        humanoid.Destroying:Connect(function()
-            for i = #validNPCs, 1, -1 do
-                if validNPCs[i] == descendant then
-                    table.remove(validNPCs, i)
-                    break
-                end
-            end
-        end)
-    end
-end
+local Slider = MainTab:CreateSlider({
+   Name = "JumpPower Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderjp", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+   end,
+})
 
-workspace.DescendantAdded:Connect(handleDescendant)
+local Dropdown = MainTab:CreateDropdown({
+   Name = "Select Area",
+   Options = {"Starter World","Pirate Island","Pineapple Paradise"},
+   CurrentOption = {"Starter World"},
+   MultipleOptions = false,
+   Flag = "dropdownarea", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Option)
+        print(Option)
+   end,
+})
 
-local function updateDrawings()
-    FOVring.Position = Cam.ViewportSize / 2
-    FOVring.Radius = fov * (Cam.ViewportSize.Y / 1080)
-end
+local Input = MainTab:CreateInput({
+   Name = "Walkspeed",
+   PlaceholderText = "1-500",
+   RemoveTextAfterFocusLost = true,
+   Callback = function(Text)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Text)
+   end,
+})
 
-local function predictPos(target)
-    local rootPart = target:FindFirstChild("HumanoidRootPart")
-    local head = target:FindFirstChild("Head")
-    if not rootPart or not head then
-        return head and head.Position or rootPart and rootPart.Position
-    end
-    local velocity = rootPart.Velocity
-    local predictionTime = 0.02
-    local basePosition = rootPart.Position + velocity * predictionTime
-    local headOffset = head.Position - rootPart.Position
-    return basePosition + headOffset
-end
+local OtherSection = MainTab:CreateSection("Other")
 
-local function getTarget()
-    local nearest = nil
-    local minDistance = math.huge
-    local viewportCenter = Cam.ViewportSize / 2
-    raycastParams.FilterDescendantsInstances = {Player.Character}
-    for _, npc in ipairs(validNPCs) do
-        local predictedPos = predictPos(npc)
-        local screenPos, visible = Cam:WorldToViewportPoint(predictedPos)
-        if visible and screenPos.Z > 0 then
-            local ray = workspace:Raycast(
-                Cam.CFrame.Position,
-                (predictedPos - Cam.CFrame.Position).Unit * 1000,
-                raycastParams
-            )
-            if ray and ray.Instance:IsDescendantOf(npc) then
-                local distance = (Vector2.new(screenPos.X, screenPos.Y) - viewportCenter).Magnitude
-                if distance < minDistance and distance < fov then
-                    minDistance = distance
-                    nearest = npc
-                end
-            end
-        end
-    end
-    return nearest
-end
+local Toggle = MainTab:CreateToggle({
+   Name = "Auto Farm",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        print("FARMING")
+   end,
+})
 
-local function aim(targetPosition)
-    local currentCF = Cam.CFrame
-    local targetDirection = (targetPosition - currentCF.Position).Unit
-    local smoothFactor = 0.581
-    local newLookVector = currentCF.LookVector:Lerp(targetDirection, smoothFactor)
-    Cam.CFrame = CFrame.new(currentCF.Position, currentCF.Position + newLookVector)
-end
+local TPTab = Window:CreateTab("🏝 Teleports", nil) -- Title, Image
 
-local heartbeat = RunService.Heartbeat
-local lastUpdate = 0
-local UPDATE_INTERVAL = 0.4
+local Button1 = TPTab:CreateButton({
+   Name = "Starter Island",
+   Callback = function()
+        --Teleport1
+   end,
+})
 
-heartbeat:Connect(function(dt)
-    updateDrawings()
-    lastUpdate = lastUpdate + dt
-    if lastUpdate >= UPDATE_INTERVAL then
-        updateNPCs()
-        lastUpdate = 0
-    end
-    if isAiming then
-        local target = getTarget()
-        if target then
-            local predictedPosition = predictPos(target)
-            aim(predictedPosition)
-        end
-    end
-end)
+local Button2 = TPTab:CreateButton({
+   Name = "Pirate Island",
+   Callback = function()
+        --Teleport2
+   end,
+})
 
-ToggleButton.MouseButton1Click:Connect(function()
-    isAiming = not isAiming
-    FOVring.Visible = isAiming
-    ToggleButton.Text = "AIMBOT: " .. (isAiming and "ON" or "OFF")
-    ToggleButton.TextColor3 = isA
+local Button3 = TPTab:CreateButton({
+   Name = "Pineapple Paradise",
+   Callback = function()
+        --Teleport3
+   end,
+})
+
+local TPTab = Window:CreateTab("🎲 Misc", nil) -- Title, Image
