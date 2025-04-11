@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "🔥 DeadRails Script Hub | Made By overlord4me 🔫",
+   Name = "🔥 Example Script Hub | Game 🔫",
    LoadingTitle = "🧟‍♂️ Dead Rails 💥",
    LoadingSubtitle = "by overlord4me",
    ConfigurationSaving = {
@@ -16,13 +16,13 @@ local Window = Rayfield:CreateWindow({
    },
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
-      Title = "Key | DeadRails Hub",
+      Title = "Key | Dead Rails Script Hub",
       Subtitle = "Key System",
       Note = "Key In Discord Server\nCoded By overlord4me",
       FileName = "YoutubeHubKey1", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"https://raw.githubusercontent.com/overlord4me/Testingsc/refs/heads/main/KeySystem"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      Key = {"https://raw.githubusercontent.com/overlord4me/Testingsc/heads/main/KeySystem") -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
    }
 })
 
@@ -31,7 +31,7 @@ local MainSection = MainTab:CreateSection("Main")
 
 Rayfield:Notify({
    Title = "You executed the script",
-   Content = "Very Cool GUI Credit to Rayfield\nCoded By overlord4me",
+   Content = "Very Cool GUI Credit To Rayfield\nCoded By overlord4me",
    Duration = 5,
    Image = 13047715178,
    Actions = { -- Notification Buttons
@@ -41,6 +41,7 @@ Rayfield:Notify({
          print("The user tapped Okay!")
       end
    },
+},
 })
 
 local Button = MainTab:CreateButton({
@@ -54,7 +55,7 @@ if _G.infinJumpStarted == nil then
 	_G.infinJumpStarted = true
 	
 	--Notifies readiness
-	game.StarterGui:SetCore("SendNotification", {Title="Coded By overlord4me"; Text="Infinite Jump Activated!"; Duration=5;})
+	game.StarterGui:SetCore("SendNotification", {Title="Youtube Hub"; Text="Infinite Jump Activated!"; Duration=5;})
 
 	--The actual infinite jump
 	local plr = game:GetService('Players').LocalPlayer
